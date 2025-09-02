@@ -9,7 +9,7 @@ on:
 
 jobs:
   build-android:
-    runs-on: ubuntu-20.04 # Use Ubuntu 20.04 for better compatibility
+    runs-on: ubuntu-22.04 # Use Ubuntu 22.04 for immediate execution
     timeout-minutes: 90
 
     steps:
@@ -19,7 +19,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.9" # Use Python 3.9 for better compatibility
+          python-version: "3.10" # Use Python 3.10 for Ubuntu 22.04 compatibility
 
       - name: Cache buildozer global directory
         uses: actions/cache@v3
@@ -117,6 +117,10 @@ jobs:
             libegl1-mesa-dev \
             libgles1-mesa-dev \
             libglu1-mesa-dev
+            
+          # Ubuntu 22.04 specific fixes
+          sudo apt-get install -y libtinfo6 || echo "libtinfo6 not available"
+          sudo apt-get install -y libncurses6 || echo "libncurses6 not available"
 
       - name: Install Python dependencies
         run: |
@@ -176,7 +180,7 @@ jobs:
           export ANDROID_HOME=$HOME/.buildozer/android/platform/android-sdk
           export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/build-tools/30.0.3
           export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
-          export PYTHONPATH=$PYTHONPATH:$HOME/.local/lib/python3.9/site-packages
+          export PYTHONPATH=$PYTHONPATH:$HOME/.local/lib/python3.10/site-packages
           export PATH=$PATH:$HOME/.local/bin
 
           # Verify environment
@@ -197,7 +201,7 @@ jobs:
           export ANDROID_HOME=$HOME/.buildozer/android/platform/android-sdk
           export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/build-tools/30.0.3
           export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
-          export PYTHONPATH=$PYTHONPATH:$HOME/.local/lib/python3.9/site-packages
+          export PYTHONPATH=$PYTHONPATH:$HOME/.local/lib/python3.10/site-packages
           export PATH=$PATH:$HOME/.local/bin
 
           # Initialize buildozer
@@ -215,7 +219,7 @@ jobs:
           export ANDROID_HOME=$HOME/.buildozer/android/platform/android-sdk
           export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/build-tools/30.0.3
           export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
-          export PYTHONPATH=$PYTHONPATH:$HOME/.local/lib/python3.9/site-packages
+          export PYTHONPATH=$PYTHONPATH:$HOME/.local/lib/python3.10/site-packages
           export PATH=$PATH:$HOME/.local/bin
 
           # Clean previous builds if they exist
