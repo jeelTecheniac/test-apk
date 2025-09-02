@@ -62,15 +62,47 @@ jobs:
           pip install buildozer cython==0.29.33
           pip install kivy==2.1.0 kivymd==1.1.1 pillow requests
 
+      - name: Setup Android SDK and accept licenses
+        run: |
+          # Create Android SDK directory
+          mkdir -p $HOME/.buildozer/android/platform
+          cd $HOME/.buildozer/android/platform
+
+          # Download and setup Android SDK
+          wget -q https://dl.google.com/android/repository/commandlinetools-linux-8512546_latest.zip
+          unzip -q commandlinetools-linux-8512546_latest.zip
+          mkdir -p android-sdk/cmdline-tools
+          mv cmdline-tools android-sdk/cmdline-tools/latest
+
+          # Set environment variables
+          export ANDROID_HOME=$HOME/.buildozer/android/platform/android-sdk
+          export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools
+
+          # Accept licenses
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
+
+          # Install required SDK packages
+          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-31" "build-tools;31.0.0" "ndk;25.1.8937393"
+
+          # Verify installation
+          ls -la $ANDROID_HOME/build-tools/
+          ls -la $ANDROID_HOME/platform-tools/
+
       - name: Initialize Buildozer
         run: |
           buildozer init || echo "Buildozer already initialized"
 
       - name: Build with Buildozer
         run: |
+          # Set environment variables for the build
+          export ANDROID_HOME=$HOME/.buildozer/android/platform/android-sdk
+          export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/build-tools/31.0.0
+
+          # Build the APK
           buildozer android debug
         env:
           JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
+          ANDROID_HOME: $HOME/.buildozer/android/platform/android-sdk
 
       - name: List build artifacts
         run: |

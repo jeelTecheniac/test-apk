@@ -23,11 +23,15 @@ android.permissions = INTERNET,ACCESS_FINE_LOCATION,ACCESS_COARSE_LOCATION,CALL_
 
 android.api = 31
 android.minapi = 21
-android.ndk = 25b
+android.ndk = 25.1.8937393
 android.sdk = 31
 android.accept_sdk_license = True
 android.gradle_dependencies = 
 android.add_java_dir = 
+
+# Ensure proper SDK paths
+android.sdk_path = %(buildozer_dir)s/android/platform/android-sdk
+android.ndk_path = %(buildozer_dir)s/android/platform/android-sdk/ndk/25.1.8937393
 
 orientation = portrait
 fullscreen = 0
