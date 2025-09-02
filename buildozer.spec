@@ -15,9 +15,6 @@ requirements = python3,kivy==2.1.0,kivymd==1.1.1,pillow,requests
 
 [buildozer]
 log_level = 2
-# Handle compatibility issues
-android.allow_newer_ndk = True
-android.allow_newer_sdk = True
 
 android.permissions = INTERNET,ACCESS_FINE_LOCATION,ACCESS_COARSE_LOCATION,CALL_PHONE
 
@@ -25,7 +22,6 @@ android.api = 30
 android.minapi = 21
 android.ndk = 21.4.7075529
 android.sdk = 30
-android.accept_sdk_license = True
 android.gradle_dependencies = 
 android.add_java_dir = 
 
@@ -41,7 +37,6 @@ android.allow_newer_ndk = True
 
 # Build settings
 android.private_storage = True
-android.accept_sdk_license = True
 
 # Additional compatibility settings
 android.enable_androidx = True
