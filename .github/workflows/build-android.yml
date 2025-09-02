@@ -131,7 +131,8 @@ jobs:
 
           # Install buildozer and python-for-android
           pip install buildozer==1.5.0
-          pip install python-for-android==2023.8.7
+          # Use a valid, recent python-for-android release compatible with Buildozer
+          pip install python-for-android==2024.1.21
 
           # Install additional build dependencies
           pip install --upgrade virtualenv
@@ -197,7 +198,7 @@ jobs:
           export ANDROID_HOME=$HOME/.buildozer/android/platform/android-sdk
           export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/build-tools/30.0.3
           export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
-          export PYTHONPATH=$PYTHONPATH:$HOME/.local/lib/python3.9/site-packages
+          export PYTHONPATH=$PYTHONPATH:$HOME/.local/lib/python3.10/site-packages
           export PATH=$PATH:$HOME/.local/bin
 
           # Initialize buildozer
@@ -215,7 +216,7 @@ jobs:
           export ANDROID_HOME=$HOME/.buildozer/android/platform/android-sdk
           export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/build-tools/30.0.3
           export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
-          export PYTHONPATH=$PYTHONPATH:$HOME/.local/lib/python3.9/site-packages
+          export PYTHONPATH=$PYTHONPATH:$HOME/.local/lib/python3.10/site-packages
           export PATH=$PATH:$HOME/.local/bin
 
           # Clean previous builds if they exist
