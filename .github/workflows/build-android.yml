@@ -102,6 +102,7 @@ jobs:
             libxxf86vm-dev \
             libxss-dev \
             libgl1-mesa-dev \
+            mesa-common-dev \
             libgles2-mesa-dev \
             libegl1-mesa-dev \
             libglu1-mesa-dev \
@@ -110,11 +111,7 @@ jobs:
             libxcursor-dev \
             libxi-dev \
             libxxf86vm-dev \
-            libxss-dev \
-            libgl1-mesa-dev \
-            libgles2-mesa-dev \
-            libegl1-mesa-dev \
-            libglu1-mesa-dev
+            libxss-dev
             
           # Ubuntu 22.04 specific fixes
           sudo apt-get install -y libtinfo6 || echo "libtinfo6 not available"
