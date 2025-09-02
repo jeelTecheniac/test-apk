@@ -10,6 +10,7 @@ on:
 jobs:
   build-android:
     runs-on: ubuntu-latest
+    timeout-minutes: 60
 
     steps:
       - name: Checkout code
@@ -38,22 +39,36 @@ jobs:
           sudo apt-get install -y git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev cmake libffi-dev libssl-dev
           # Fix for libtinfo5 on newer Ubuntu
           sudo apt-get install -y libtinfo5 || sudo apt-get install -y libncurses5
+          # Install additional dependencies for buildozer
+          sudo apt-get install -y build-essential libssl-dev libffi-dev python3-dev
 
       - name: Install Python dependencies
         run: |
           python -m pip install --upgrade pip
           pip install buildozer cython==0.29.33
-          pip install kivy==2.1.0 kivymd==1.1.1
+          pip install kivy==2.1.0 kivymd==1.1.1 pillow requests
+
+      - name: Initialize Buildozer
+        run: |
+          buildozer init || echo "Buildozer already initialized"
 
       - name: Build with Buildozer
         run: |
           buildozer android debug
+        env:
+          JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
+
+      - name: List build artifacts
+        run: |
+          ls -la bin/ || echo "No bin directory found"
+          find . -name "*.apk" -type f || echo "No APK files found"
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
           name: android-apk
           path: bin/*.apk
+        if: hashFiles('bin/*.apk') != ''
 
       - name: Create Release (if tag)
         if: startsWith(github.ref, 'refs/tags/')

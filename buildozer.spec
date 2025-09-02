@@ -9,13 +9,13 @@ source.include_exts = py,png,jpg,kv,atlas
 version = 1.0
 requirements = python3,kivy==2.1.0,kivymd==1.1.1,pillow,requests
 
-icon.filename = %(source.dir)s/ambulance_icon.png
-presplash.filename = %(source.dir)s/presplash.png
+# Comment out icon and presplash for now since files don't exist
+# icon.filename = %(source.dir)s/ambulance_icon.png
+# presplash.filename = %(source.dir)s/presplash.png
 
 [buildozer]
 log_level = 2
 
-[app]
 android.permissions = INTERNET,ACCESS_FINE_LOCATION,ACCESS_COARSE_LOCATION,CALL_PHONE
 
 android.api = 31
