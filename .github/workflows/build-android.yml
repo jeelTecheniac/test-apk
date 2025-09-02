@@ -62,6 +62,13 @@ jobs:
           pip install buildozer cython==0.29.33
           pip install kivy==2.1.0 kivymd==1.1.1 pillow requests
 
+          # Install python-for-android dependencies
+          pip install python-for-android
+          pip install --upgrade setuptools wheel
+
+          # Install additional build dependencies
+          pip install --upgrade virtualenv
+
       - name: Setup Android SDK and accept licenses
         run: |
           # Create Android SDK directory
@@ -105,14 +112,45 @@ jobs:
         run: |
           buildozer init || echo "Buildozer already initialized"
 
+          # Create .buildozer directory if it doesn't exist
+          mkdir -p .buildozer
+
+          # Set proper permissions
+          chmod -R 755 .buildozer || echo "Permission setting failed"
+
+      - name: Configure Python for Android
+        run: |
+          # Set environment variables for python-for-android
+          export PYTHONPATH=$PYTHONPATH:$HOME/.local/lib/python3.10/site-packages
+          export PATH=$PATH:$HOME/.local/bin
+
+          # Verify python-for-android installation
+          python -c "import pythonforandroid; print('python-for-android version:', pythonforandroid.__version__)" || echo "python-for-android not found"
+
+          # Check buildozer configuration
+          buildozer --version || echo "buildozer not working"
+
+          # List installed packages
+          pip list | grep -E "(buildozer|python-for-android|kivy|cython)" || echo "Some packages not found"
+
       - name: Build with Buildozer
         run: |
           # Set environment variables for the build
           export ANDROID_HOME=$HOME/.buildozer/android/platform/android-sdk
           export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/build-tools/31.0.0
+          export PYTHONPATH=$PYTHONPATH:$HOME/.local/lib/python3.10/site-packages
+          export PATH=$PATH:$HOME/.local/bin
 
-          # Build the APK
-          buildozer android debug
+          # Verify environment
+          echo "ANDROID_HOME: $ANDROID_HOME"
+          echo "PATH: $PATH"
+          echo "PYTHONPATH: $PYTHONPATH"
+
+          # Clean previous builds if they exist
+          buildozer android clean || echo "No previous builds to clean"
+
+          # Build the APK with verbose output
+          buildozer android debug -v
         env:
           JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
           ANDROID_HOME: $HOME/.buildozer/android/platform/android-sdk

@@ -33,5 +33,9 @@ android.add_java_dir =
 android.sdk_path = %(buildozer_dir)s/android/platform/android-sdk
 android.ndk_path = %(buildozer_dir)s/android/platform/android-sdk/ndk/25.1.8937393
 
+# Python for Android settings
+android.arch = arm64-v8a armeabi-v7a
+android.allow_newer_python = True
+
 orientation = portrait
 fullscreen = 0
