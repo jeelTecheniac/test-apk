@@ -33,13 +33,19 @@ android.add_java_dir =
 android.sdk_path = %(buildozer_dir)s/android/platform/android-sdk
 android.ndk_path = %(buildozer_dir)s/android/platform/android-sdk/ndk/21.4.7075529
 
-# Python for Android settings
+# Python for Android settings for 2024.1.21
 android.arch = arm64-v8a armeabi-v7a
 android.allow_newer_python = True
+android.allow_newer_sdk = True
+android.allow_newer_ndk = True
 
 # Build settings
 android.private_storage = True
 android.accept_sdk_license = True
+
+# Additional compatibility settings
+android.enable_androidx = True
+android.gradle_dependencies = androidx.core:core:1.6.0
 
 orientation = portrait
 fullscreen = 0

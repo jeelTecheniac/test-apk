@@ -135,24 +135,21 @@ jobs:
 
       - name: Install Python dependencies
         run: |
-          python -m pip install --upgrade pip setuptools wheel
-
-          # Install specific versions for compatibility
-          pip install cython==0.29.33
-          pip install kivy==2.1.0
-          pip install kivymd==1.1.1
-          pip install pillow
-          pip install requests
-
-          # Install buildozer and python-for-android
-          pip install buildozer==1.5.0
-          pip install python-for-android==2023.8.7
-
-          # Install additional build dependencies
+          python -m pip install --upgrade pip
+          pip install --upgrade setuptools wheel
           pip install --upgrade virtualenv
-          pip install --upgrade six
-          pip install --upgrade jinja2
-          pip install --upgrade sh
+          pip install buildozer==1.5.0
+          pip install python-for-android==2024.1.21
+          pip install pillow requests
+
+          # Verify installations
+          echo "Verifying Python packages..."
+          python -c "import buildozer; print(f'Buildozer version: {buildozer.__version__}')"
+          python -c "import p4a; print(f'Python-for-Android version: {p4a.__version__}')" || echo "p4a module not found, checking alternative import"
+          python -c "import pythonforandroid; print('python-for-android imported successfully')" || echo "python-for-android import failed"
+
+          # List installed packages
+          pip list | grep -E "(buildozer|python-for-android|virtualenv)"
 
       - name: Setup Android SDK
         run: |
