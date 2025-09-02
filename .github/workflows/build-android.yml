@@ -228,6 +228,25 @@ jobs:
           JAVA_HOME: /usr/lib/jvm/java-8-openjdk-amd64
           ANDROID_HOME: $HOME/.buildozer/android/platform/android-sdk
 
+      - name: Collect APKs
+        run: |
+          mkdir -p bin
+          echo "Searching for APKs..."
+          find . -type f -name "*.apk" -print || true
+          # Common Buildozer output locations
+          for d in \
+            .buildozer/android/platform/build-*/dists/*/bin \
+            .buildozer/android/platform/build-*/dists/*/build/outputs/apk/debug \
+            .buildozer/android/platform/build-*/dists/*/build/outputs/apk/release \
+            bin
+          do
+            if [ -d "$d" ]; then
+              cp -v "$d"/*.apk bin/ 2>/dev/null || true
+            fi
+          done
+          echo "Final APKs in bin/:"
+          ls -la bin/ || true
+
       - name: List build artifacts
         run: |
           ls -la bin/ || echo "No bin directory found"
