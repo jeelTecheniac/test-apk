@@ -15,6 +15,9 @@ requirements = python3,kivy==2.1.0,kivymd==1.1.1,pillow,requests
 
 [buildozer]
 log_level = 2
+# Handle ncurses issues in CI environment
+android.allow_newer_ndk = True
+android.allow_newer_sdk = True
 
 android.permissions = INTERNET,ACCESS_FINE_LOCATION,ACCESS_COARSE_LOCATION,CALL_PHONE
 

@@ -35,12 +35,26 @@ jobs:
 
       - name: Install system dependencies
         run: |
+          # Update package lists and add universe repository
           sudo apt-get update
-          sudo apt-get install -y git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev cmake libffi-dev libssl-dev
-          # Fix for libtinfo5 on newer Ubuntu
-          sudo apt-get install -y libtinfo5 || sudo apt-get install -y libncurses5
+          sudo apt-get install -y software-properties-common
+          sudo add-apt-repository universe -y
+          sudo apt-get update
+
+          # Install core dependencies
+          sudo apt-get install -y git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config zlib1g-dev cmake libffi-dev libssl-dev
+
           # Install additional dependencies for buildozer
           sudo apt-get install -y build-essential libssl-dev libffi-dev python3-dev
+
+          # Handle ncurses packages with multiple fallback options
+          sudo apt-get install -y libncurses5-dev libncursesw5-dev || echo "ncurses dev packages not available, trying alternatives..."
+
+          # Try to install libtinfo5 or alternatives
+          sudo apt-get install -y libtinfo5 || sudo apt-get install -y libncurses5 || sudo apt-get install -y libncurses6 || echo "libtinfo/ncurses runtime packages not available, continuing..."
+
+          # Verify what ncurses packages are available
+          dpkg -l | grep ncurses || echo "No ncurses packages found"
 
       - name: Install Python dependencies
         run: |
