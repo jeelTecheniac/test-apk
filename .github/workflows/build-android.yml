@@ -9,8 +9,8 @@ on:
 
 jobs:
   build-android:
-    runs-on: ubuntu-latest
-    timeout-minutes: 60
+    runs-on: ubuntu-20.04 # Use Ubuntu 20.04 for better compatibility
+    timeout-minutes: 90
 
     steps:
       - name: Checkout code
@@ -19,7 +19,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: "3.10"
+          python-version: "3.9" # Use Python 3.9 for better compatibility
 
       - name: Cache buildozer global directory
         uses: actions/cache@v3
@@ -35,41 +35,111 @@ jobs:
 
       - name: Install system dependencies
         run: |
-          # Update package lists and add universe repository
           sudo apt-get update
           sudo apt-get install -y software-properties-common
           sudo add-apt-repository universe -y
           sudo apt-get update
 
-          # Install core dependencies
-          sudo apt-get install -y git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config zlib1g-dev cmake libffi-dev libssl-dev
-
-          # Install additional dependencies for buildozer
-          sudo apt-get install -y build-essential libssl-dev libffi-dev python3-dev
-
-          # Handle ncurses packages with multiple fallback options
-          sudo apt-get install -y libncurses5-dev libncursesw5-dev || echo "ncurses dev packages not available, trying alternatives..."
-
-          # Try to install libtinfo5 or alternatives
-          sudo apt-get install -y libtinfo5 || sudo apt-get install -y libncurses5 || sudo apt-get install -y libncurses6 || echo "libtinfo/ncurses runtime packages not available, continuing..."
-
-          # Verify what ncurses packages are available
-          dpkg -l | grep ncurses || echo "No ncurses packages found"
+          # Install core build dependencies
+          sudo apt-get install -y \
+            git \
+            zip \
+            unzip \
+            openjdk-8-jdk \
+            python3-pip \
+            autoconf \
+            libtool \
+            pkg-config \
+            zlib1g-dev \
+            libncurses5-dev \
+            libncursesw5-dev \
+            cmake \
+            libffi-dev \
+            libssl-dev \
+            build-essential \
+            wget \
+            curl \
+            libxml2-dev \
+            libxslt-dev \
+            libjpeg-dev \
+            libpng-dev \
+            libfreetype6-dev \
+            libgif-dev \
+            libsdl2-dev \
+            libsdl2-image-dev \
+            libsdl2-mixer-dev \
+            libsdl2-ttf-dev \
+            libportmidi-dev \
+            libswscale-dev \
+            libavformat-dev \
+            libavcodec-dev \
+            libgstreamer1.0-dev \
+            libgstreamer-plugins-base1.0-dev \
+            libgstreamer-plugins-good1.0-dev \
+            libgirepository1.0-dev \
+            libcairo2-dev \
+            pkg-config \
+            python3-gi \
+            python3-gi-cairo \
+            libgirepository1.0-dev \
+            libffi-dev \
+            libssl-dev \
+            autoconf \
+            libtool \
+            pkg-config \
+            cmake \
+            libasound2-dev \
+            libpulse-dev \
+            libudev-dev \
+            libinput-dev \
+            libts-dev \
+            libx11-dev \
+            libxext-dev \
+            libxrandr-dev \
+            libxcursor-dev \
+            libxi-dev \
+            libxinerama-dev \
+            libxxf86vm-dev \
+            libxss-dev \
+            libgl1-mesa-dev \
+            libgles2-mesa-dev \
+            libegl1-mesa-dev \
+            libgles1-mesa-dev \
+            libglu1-mesa-dev \
+            libxrandr-dev \
+            libxinerama-dev \
+            libxcursor-dev \
+            libxi-dev \
+            libxxf86vm-dev \
+            libxss-dev \
+            libgl1-mesa-dev \
+            libgles2-mesa-dev \
+            libegl1-mesa-dev \
+            libgles1-mesa-dev \
+            libglu1-mesa-dev
 
       - name: Install Python dependencies
         run: |
-          python -m pip install --upgrade pip
-          pip install buildozer cython==0.29.33
-          pip install kivy==2.1.0 kivymd==1.1.1 pillow requests
+          python -m pip install --upgrade pip setuptools wheel
 
-          # Install python-for-android dependencies
-          pip install python-for-android
-          pip install --upgrade setuptools wheel
+          # Install specific versions for compatibility
+          pip install cython==0.29.33
+          pip install kivy==2.1.0
+          pip install kivymd==1.1.1
+          pip install pillow
+          pip install requests
+
+          # Install buildozer and python-for-android
+          pip install buildozer==1.5.0
+          pip install python-for-android==2023.8.7
 
           # Install additional build dependencies
           pip install --upgrade virtualenv
+          pip install --upgrade six
+          pip install --upgrade jinja2
+          pip install --upgrade sh
 
-      - name: Setup Android SDK and accept licenses
+      - name: Setup Android SDK
         run: |
           # Create Android SDK directory
           mkdir -p $HOME/.buildozer/android/platform
@@ -93,23 +163,44 @@ jobs:
           yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses
 
           # Install required SDK packages
-          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-31" "build-tools;31.0.0" "ndk;25.1.8937393"
+          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platform-tools" "platforms;android-30" "build-tools;30.0.3" "ndk;21.4.7075529"
 
           # Verify installation
           ls -la $ANDROID_HOME/build-tools/
           ls -la $ANDROID_HOME/platform-tools/
-
-          # Verify sdkmanager is accessible
-          echo "Checking sdkmanager availability:"
           ls -la $ANDROID_HOME/tools/bin/
-          ls -la $ANDROID_HOME/cmdline-tools/latest/bin/
 
-          # Test sdkmanager
-          $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --version || echo "sdkmanager not working from cmdline-tools"
-          $ANDROID_HOME/tools/bin/sdkmanager --version || echo "sdkmanager not working from tools/bin"
+      - name: Configure environment
+        run: |
+          # Set environment variables
+          export ANDROID_HOME=$HOME/.buildozer/android/platform/android-sdk
+          export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/build-tools/30.0.3
+          export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+          export PYTHONPATH=$PYTHONPATH:$HOME/.local/lib/python3.9/site-packages
+          export PATH=$PATH:$HOME/.local/bin
+
+          # Verify environment
+          echo "ANDROID_HOME: $ANDROID_HOME"
+          echo "JAVA_HOME: $JAVA_HOME"
+          echo "PATH: $PATH"
+          echo "PYTHONPATH: $PYTHONPATH"
+
+          # Test key tools
+          java -version
+          javac -version
+          python --version
+          buildozer --version
 
       - name: Initialize Buildozer
         run: |
+          # Set environment variables
+          export ANDROID_HOME=$HOME/.buildozer/android/platform/android-sdk
+          export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/build-tools/30.0.3
+          export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+          export PYTHONPATH=$PYTHONPATH:$HOME/.local/lib/python3.9/site-packages
+          export PATH=$PATH:$HOME/.local/bin
+
+          # Initialize buildozer
           buildozer init || echo "Buildozer already initialized"
 
           # Create .buildozer directory if it doesn't exist
@@ -118,33 +209,14 @@ jobs:
           # Set proper permissions
           chmod -R 755 .buildozer || echo "Permission setting failed"
 
-      - name: Configure Python for Android
-        run: |
-          # Set environment variables for python-for-android
-          export PYTHONPATH=$PYTHONPATH:$HOME/.local/lib/python3.10/site-packages
-          export PATH=$PATH:$HOME/.local/bin
-
-          # Verify python-for-android installation
-          python -c "import pythonforandroid; print('python-for-android version:', pythonforandroid.__version__)" || echo "python-for-android not found"
-
-          # Check buildozer configuration
-          buildozer --version || echo "buildozer not working"
-
-          # List installed packages
-          pip list | grep -E "(buildozer|python-for-android|kivy|cython)" || echo "Some packages not found"
-
       - name: Build with Buildozer
         run: |
           # Set environment variables for the build
           export ANDROID_HOME=$HOME/.buildozer/android/platform/android-sdk
-          export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/build-tools/31.0.0
-          export PYTHONPATH=$PYTHONPATH:$HOME/.local/lib/python3.10/site-packages
+          export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/build-tools/30.0.3
+          export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+          export PYTHONPATH=$PYTHONPATH:$HOME/.local/lib/python3.9/site-packages
           export PATH=$PATH:$HOME/.local/bin
-
-          # Verify environment
-          echo "ANDROID_HOME: $ANDROID_HOME"
-          echo "PATH: $PATH"
-          echo "PYTHONPATH: $PYTHONPATH"
 
           # Clean previous builds if they exist
           buildozer android clean || echo "No previous builds to clean"
@@ -152,7 +224,7 @@ jobs:
           # Build the APK with verbose output
           buildozer android debug -v
         env:
-          JAVA_HOME: /usr/lib/jvm/java-17-openjdk-amd64
+          JAVA_HOME: /usr/lib/jvm/java-8-openjdk-amd64
           ANDROID_HOME: $HOME/.buildozer/android/platform/android-sdk
 
       - name: List build artifacts
