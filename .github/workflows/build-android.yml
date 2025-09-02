@@ -40,7 +40,7 @@ jobs:
           sudo add-apt-repository universe -y
           sudo apt-get update
 
-          # Install core build dependencies
+          # Install core build dependencies first
           sudo apt-get install -y \
             git \
             zip \
@@ -64,27 +64,46 @@ jobs:
             libjpeg-dev \
             libpng-dev \
             libfreetype6-dev \
-            libgif-dev \
+            libgif-dev
+            
+          # Install SDL2 and multimedia packages
+          sudo apt-get install -y \
             libsdl2-dev \
             libsdl2-image-dev \
             libsdl2-mixer-dev \
             libsdl2-ttf-dev \
-            libportmidi-dev \
+            libportmidi-dev
+            
+          # Install FFmpeg packages
+          sudo apt-get install -y \
             libswscale-dev \
             libavformat-dev \
-            libavcodec-dev \
+            libavcodec-dev
+            
+          # Install GStreamer with proper dependencies
+          sudo apt-get install -y \
+            libunwind-dev \
             libgstreamer1.0-dev \
             libgstreamer-plugins-base1.0-dev \
-            libgstreamer-plugins-good1.0-dev \
+            libgstreamer-plugins-good1.0-dev
+            
+          # Install graphics and GUI packages
+          sudo apt-get install -y \
             libgirepository1.0-dev \
             libcairo2-dev \
             python3-gi \
-            python3-gi-cairo \
+            python3-gi-cairo
+            
+          # Install audio and input packages
+          sudo apt-get install -y \
             libasound2-dev \
             libpulse-dev \
             libudev-dev \
             libinput-dev \
-            libts-dev \
+            libts-dev
+            
+          # Install X11 and OpenGL packages
+          sudo apt-get install -y \
             libx11-dev \
             libxext-dev \
             libxrandr-dev \
@@ -101,6 +120,9 @@ jobs:
           # Ubuntu 22.04 specific compatibility packages
           sudo apt-get install -y libtinfo6 || echo "libtinfo6 not available"
           sudo apt-get install -y libncurses6 || echo "libncurses6 not available"
+
+          # Fix any broken dependencies
+          sudo apt-get --fix-broken install -y || echo "No broken dependencies to fix"
 
           # Verify key packages are installed
           echo "Verifying key packages..."
