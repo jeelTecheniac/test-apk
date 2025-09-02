@@ -40,12 +40,12 @@ jobs:
           sudo add-apt-repository universe -y
           sudo apt-get update
 
-          # Install core build dependencies first
+          # Install core build dependencies
           sudo apt-get install -y \
             git \
             zip \
             unzip \
-            openjdk-11-jdk \
+            openjdk-8-jdk \
             python3-pip \
             autoconf \
             libtool \
@@ -64,46 +64,35 @@ jobs:
             libjpeg-dev \
             libpng-dev \
             libfreetype6-dev \
-            libgif-dev
-            
-          # Install SDL2 and multimedia packages
-          sudo apt-get install -y \
+            libgif-dev \
             libsdl2-dev \
             libsdl2-image-dev \
             libsdl2-mixer-dev \
             libsdl2-ttf-dev \
-            libportmidi-dev
-            
-          # Install FFmpeg packages
-          sudo apt-get install -y \
+            libportmidi-dev \
             libswscale-dev \
             libavformat-dev \
-            libavcodec-dev
-            
-          # Install GStreamer with proper dependencies
-          sudo apt-get install -y \
-            libunwind-dev \
+            libavcodec-dev \
             libgstreamer1.0-dev \
             libgstreamer-plugins-base1.0-dev \
-            libgstreamer-plugins-good1.0-dev
-            
-          # Install graphics and GUI packages
-          sudo apt-get install -y \
+            libgstreamer-plugins-good1.0-dev \
             libgirepository1.0-dev \
             libcairo2-dev \
+            pkg-config \
             python3-gi \
-            python3-gi-cairo
-            
-          # Install audio and input packages
-          sudo apt-get install -y \
+            python3-gi-cairo \
+            libgirepository1.0-dev \
+            libffi-dev \
+            libssl-dev \
+            autoconf \
+            libtool \
+            pkg-config \
+            cmake \
             libasound2-dev \
             libpulse-dev \
             libudev-dev \
             libinput-dev \
-            libts-dev
-            
-          # Install X11 and OpenGL packages
-          sudo apt-get install -y \
+            libts-dev \
             libx11-dev \
             libxext-dev \
             libxrandr-dev \
@@ -115,41 +104,44 @@ jobs:
             libgl1-mesa-dev \
             libgles2-mesa-dev \
             libegl1-mesa-dev \
+            libgles1-mesa-dev \
+            libglu1-mesa-dev \
+            libxrandr-dev \
+            libxinerama-dev \
+            libxcursor-dev \
+            libxi-dev \
+            libxxf86vm-dev \
+            libxss-dev \
+            libgl1-mesa-dev \
+            libgles2-mesa-dev \
+            libegl1-mesa-dev \
+            libgles1-mesa-dev \
             libglu1-mesa-dev
             
-          # Ubuntu 22.04 specific compatibility packages
+          # Ubuntu 22.04 specific fixes
           sudo apt-get install -y libtinfo6 || echo "libtinfo6 not available"
           sudo apt-get install -y libncurses6 || echo "libncurses6 not available"
 
-          # Fix any broken dependencies
-          sudo apt-get --fix-broken install -y || echo "No broken dependencies to fix"
-
-          # Verify key packages are installed
-          echo "Verifying key packages..."
-          dpkg -l | grep -E "(libsdl2|libgstreamer|libgl1-mesa|libgles2-mesa)" || echo "Some packages may not be installed"
-
-          # Check Java installation
-          echo "Checking Java installation..."
-          java -version || echo "Java not found"
-          javac -version || echo "Java compiler not found"
-
       - name: Install Python dependencies
         run: |
-          python -m pip install --upgrade pip
-          pip install --upgrade setuptools wheel
-          pip install --upgrade virtualenv
+          python -m pip install --upgrade pip setuptools wheel
+
+          # Install specific versions for compatibility
+          pip install cython==0.29.33
+          pip install kivy==2.1.0
+          pip install kivymd==1.1.1
+          pip install pillow
+          pip install requests
+
+          # Install buildozer and python-for-android
           pip install buildozer==1.5.0
-          pip install python-for-android==2024.1.21
-          pip install pillow requests
+          pip install python-for-android==2023.8.7
 
-          # Verify installations
-          echo "Verifying Python packages..."
-          python -c "import buildozer; print(f'Buildozer version: {buildozer.__version__}')"
-          python -c "import p4a; print(f'Python-for-Android version: {p4a.__version__}')" || echo "p4a module not found, checking alternative import"
-          python -c "import pythonforandroid; print('python-for-android imported successfully')" || echo "python-for-android import failed"
-
-          # List installed packages
-          pip list | grep -E "(buildozer|python-for-android|virtualenv)"
+          # Install additional build dependencies
+          pip install --upgrade virtualenv
+          pip install --upgrade six
+          pip install --upgrade jinja2
+          pip install --upgrade sh
 
       - name: Setup Android SDK
         run: |
@@ -187,7 +179,7 @@ jobs:
           # Set environment variables
           export ANDROID_HOME=$HOME/.buildozer/android/platform/android-sdk
           export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/build-tools/30.0.3
-          export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
+          export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
           export PYTHONPATH=$PYTHONPATH:$HOME/.local/lib/python3.10/site-packages
           export PATH=$PATH:$HOME/.local/bin
 
@@ -208,8 +200,8 @@ jobs:
           # Set environment variables
           export ANDROID_HOME=$HOME/.buildozer/android/platform/android-sdk
           export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/build-tools/30.0.3
-          export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
-          export PYTHONPATH=$PYTHONPATH:$HOME/.local/lib/python3.10/site-packages
+          export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+          export PYTHONPATH=$PYTHONPATH:$HOME/.local/lib/python3.9/site-packages
           export PATH=$PATH:$HOME/.local/bin
 
           # Initialize buildozer
@@ -226,8 +218,8 @@ jobs:
           # Set environment variables for the build
           export ANDROID_HOME=$HOME/.buildozer/android/platform/android-sdk
           export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/build-tools/30.0.3
-          export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
-          export PYTHONPATH=$PYTHONPATH:$HOME/.local/lib/python3.10/site-packages
+          export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+          export PYTHONPATH=$PYTHONPATH:$HOME/.local/lib/python3.9/site-packages
           export PATH=$PATH:$HOME/.local/bin
 
           # Clean previous builds if they exist
@@ -236,7 +228,7 @@ jobs:
           # Build the APK with verbose output
           buildozer android debug -v
         env:
-          JAVA_HOME: /usr/lib/jvm/java-11-openjdk-amd64
+          JAVA_HOME: /usr/lib/jvm/java-8-openjdk-amd64
           ANDROID_HOME: $HOME/.buildozer/android/platform/android-sdk
 
       - name: List build artifacts
