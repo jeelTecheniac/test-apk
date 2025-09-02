@@ -22,7 +22,6 @@ android.api = 30
 android.minapi = 21
 android.ndk = 21.4.7075529
 android.sdk = 30
-android.gradle_dependencies = 
 android.add_java_dir = 
 
 # Ensure proper SDK paths
@@ -30,7 +29,7 @@ android.sdk_path = %(buildozer_dir)s/android/platform/android-sdk
 android.ndk_path = %(buildozer_dir)s/android/platform/android-sdk/ndk/21.4.7075529
 
 # Python for Android settings for 2024.1.21
-android.arch = arm64-v8a armeabi-v7a
+android.arch = armeabi-v7a, arm64-v8a
 android.allow_newer_python = True
 android.allow_newer_sdk = True
 android.allow_newer_ndk = True
