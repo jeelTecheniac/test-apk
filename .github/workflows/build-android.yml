@@ -104,7 +104,6 @@ jobs:
             libgl1-mesa-dev \
             libgles2-mesa-dev \
             libegl1-mesa-dev \
-            libgles1-mesa-dev \
             libglu1-mesa-dev \
             libxrandr-dev \
             libxinerama-dev \
@@ -115,7 +114,6 @@ jobs:
             libgl1-mesa-dev \
             libgles2-mesa-dev \
             libegl1-mesa-dev \
-            libgles1-mesa-dev \
             libglu1-mesa-dev
             
           # Ubuntu 22.04 specific fixes
