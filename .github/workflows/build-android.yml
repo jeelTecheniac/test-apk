@@ -45,7 +45,7 @@ jobs:
             git \
             zip \
             unzip \
-            openjdk-8-jdk \
+            openjdk-11-jdk \
             python3-pip \
             autoconf \
             libtool \
@@ -78,16 +78,8 @@ jobs:
             libgstreamer-plugins-good1.0-dev \
             libgirepository1.0-dev \
             libcairo2-dev \
-            pkg-config \
             python3-gi \
             python3-gi-cairo \
-            libgirepository1.0-dev \
-            libffi-dev \
-            libssl-dev \
-            autoconf \
-            libtool \
-            pkg-config \
-            cmake \
             libasound2-dev \
             libpulse-dev \
             libudev-dev \
@@ -104,23 +96,20 @@ jobs:
             libgl1-mesa-dev \
             libgles2-mesa-dev \
             libegl1-mesa-dev \
-            libgles1-mesa-dev \
-            libglu1-mesa-dev \
-            libxrandr-dev \
-            libxinerama-dev \
-            libxcursor-dev \
-            libxi-dev \
-            libxxf86vm-dev \
-            libxss-dev \
-            libgl1-mesa-dev \
-            libgles2-mesa-dev \
-            libegl1-mesa-dev \
-            libgles1-mesa-dev \
             libglu1-mesa-dev
             
-          # Ubuntu 22.04 specific fixes
+          # Ubuntu 22.04 specific compatibility packages
           sudo apt-get install -y libtinfo6 || echo "libtinfo6 not available"
           sudo apt-get install -y libncurses6 || echo "libncurses6 not available"
+
+          # Verify key packages are installed
+          echo "Verifying key packages..."
+          dpkg -l | grep -E "(libsdl2|libgstreamer|libgl1-mesa|libgles2-mesa)" || echo "Some packages may not be installed"
+
+          # Check Java installation
+          echo "Checking Java installation..."
+          java -version || echo "Java not found"
+          javac -version || echo "Java compiler not found"
 
       - name: Install Python dependencies
         run: |
@@ -179,7 +168,7 @@ jobs:
           # Set environment variables
           export ANDROID_HOME=$HOME/.buildozer/android/platform/android-sdk
           export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/build-tools/30.0.3
-          export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+          export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
           export PYTHONPATH=$PYTHONPATH:$HOME/.local/lib/python3.10/site-packages
           export PATH=$PATH:$HOME/.local/bin
 
@@ -200,7 +189,7 @@ jobs:
           # Set environment variables
           export ANDROID_HOME=$HOME/.buildozer/android/platform/android-sdk
           export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/build-tools/30.0.3
-          export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+          export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
           export PYTHONPATH=$PYTHONPATH:$HOME/.local/lib/python3.10/site-packages
           export PATH=$PATH:$HOME/.local/bin
 
@@ -218,7 +207,7 @@ jobs:
           # Set environment variables for the build
           export ANDROID_HOME=$HOME/.buildozer/android/platform/android-sdk
           export PATH=$PATH:$ANDROID_HOME/cmdline-tools/latest/bin:$ANDROID_HOME/platform-tools:$ANDROID_HOME/build-tools/30.0.3
-          export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
+          export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
           export PYTHONPATH=$PYTHONPATH:$HOME/.local/lib/python3.10/site-packages
           export PATH=$PATH:$HOME/.local/bin
 
@@ -228,7 +217,7 @@ jobs:
           # Build the APK with verbose output
           buildozer android debug -v
         env:
-          JAVA_HOME: /usr/lib/jvm/java-8-openjdk-amd64
+          JAVA_HOME: /usr/lib/jvm/java-11-openjdk-amd64
           ANDROID_HOME: $HOME/.buildozer/android/platform/android-sdk
 
       - name: List build artifacts
